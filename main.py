@@ -60,6 +60,14 @@ def handle_message(event: MessageEvent):
     elif message_text.startswith('!info'):
         event.message: Message
         event.source: Source
+        if event.source.type != "group":
+            user_id = event.source.user_id
+            dispname = line_bot_api.get_profile(user_id=user_id).display_name
+            line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage(text=f"{dispname}\nuser id: {user_id}")
+            )
+            return
         user_id = event.source.user_id
         group_id = event.source.group_id
         dispname = line_bot_api.get_group_member_profile(group_id=group_id, user_id=user_id).display_name
