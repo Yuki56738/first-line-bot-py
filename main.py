@@ -58,8 +58,6 @@ def handle_message(event: MessageEvent):
             TextSendMessage(text="Hello World!")
         )
     elif message_text.startswith('!info'):
-        event.message: Message
-        event.source: Source
         if event.source.type != "group":
             user_id = event.source.user_id
             dispname = line_bot_api.get_profile(user_id=user_id).display_name
@@ -87,6 +85,22 @@ def handle_message(event: MessageEvent):
             event.reply_token,
             TextSendMessage(text=guild_id)
         )
+    elif message_text.startswith('!image'):
+        line_bot_api.reply_message(
+            event.reply_token,
+            ImageSendMessage(
+                original_content_url="https://1.risaton.net/image.jpg",
+                preview_image_url="https://1.risaton.net/image.jpg"
+            )
+        )
+        # group_id = event.source.group_id
+        # user_id = event.source.user_id
+        # line_bot_api.push_message(
+        #     user_id,
+        #     ImageSendMessage(
+        #         original_content_url="https://1.risaton.net/image.jpg"
+        #     )
+        # )
     '''
     elif message_text.startswith("!g"):
         members = line_bot_api.get_group_member_ids(event.source.group_id)
