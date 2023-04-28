@@ -17,9 +17,11 @@ app = Flask(__name__)
 line_bot_api = LineBotApi(os.environ.get("LINE_TOKEN"))
 handler = WebhookHandler(os.environ.get("WEBH"))
 
+
 @app.route("/test")
 def test():
     return "Hello World!"
+
 
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -35,9 +37,11 @@ def callback():
 
     return 'OK'
 
+
 @handler.add(Event)
 def handle_event(event: Event):
-    print("event type: "+event.type)
+    print("event type: " + event.type)
+
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event: MessageEvent):
@@ -94,26 +98,9 @@ def handle_message(event: MessageEvent):
                 preview_image_url="https://1.risaton.net/image.jpg"
             )
         )
-    '''
-    elif message_text.startswith("!g"):
-        members = line_bot_api.get_group_member_ids(event.source.group_id)
-        member_names = ''
-        # for member_id in members.member_ids:
-        #     member_names += line_bot_api.get_group_member_profile(event.source.group_id, member_id).display_name+','
-        line_bot_api.reply_message(
-            event.reply_token,
-            TextSendMessage(text=members.as_json_string())
-        )
-        # line_bot_api.push_message(
-        #     event.source.user_id,
-        #     TextSendMessage(text=line_bot_api.getgroup)
-        # )
-    '''
-
-
 
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', debug=False, port=os.environ.get("PORT", 5100))
-    #app.run()
-    #app.run(host='0.0.0.0', port=5100, debug=False)
+    # app.run()
+    # app.run(host='0.0.0.0', port=5100, debug=False)
