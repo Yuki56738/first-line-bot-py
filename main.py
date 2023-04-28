@@ -1,5 +1,6 @@
 import logging
 import os
+import traceback
 
 from flask import Flask, request, abort
 from linebot import *
@@ -40,13 +41,13 @@ def handle_event(event: Event):
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event: MessageEvent):
-    message_text = event.message.text
-    reply_text = 'You said: ' + message_text
-    print("message_text: "+message_text)
-    print("message type: "+event.message.type)
-    print("event type: "+event.type)
+    message_text = ''
+    if event.message.type == "text":
+        message_text = event.message.text
+
     if message_text.startswith('!r'):
         # reply_text = 'You said: ' + message_text
+        reply_text = 'You said: ' + message_text
         line_bot_api.reply_message(
             event.reply_token,
             TextSendMessage(text=reply_text)
@@ -60,10 +61,11 @@ def handle_message(event: MessageEvent):
     elif message_text.startswith('!info'):
         if event.source.type != "group":
             user_id = event.source.user_id
-            dispname = line_bot_api.get_profile(user_id=user_id).display_name
+            user_prof = line_bot_api.get_profile(user_id=user_id)
+            dispname = user_prof.display_name
             line_bot_api.reply_message(
                 event.reply_token,
-                TextSendMessage(text=f"{dispname}\nuser id: {user_id}")
+                TextSendMessage(text=f"{dispname}\nuser id: {user_id}\n{user_prof.picture_url}")
             )
             return
         user_id = event.source.user_id
@@ -72,12 +74,11 @@ def handle_message(event: MessageEvent):
         line_bot_api.reply_message(
             event.reply_token,
             TextSendMessage(text=f"{dispname}\nuser id: {user_id}")
-            # TextSendMessage(text=f"{event.source.sender_id}\n {event.source.group_id}")
         )
     elif message_text.startswith('!type'):
         line_bot_api.reply_message(
             event.reply_token,
-            TextSendMessage(text=f"{event.source.type}")
+            TextSendMessage(text=f"{event.message.type}")
         )
     elif message_text.startswith('!gid'):
         guild_id = event.source.group_id
@@ -93,14 +94,6 @@ def handle_message(event: MessageEvent):
                 preview_image_url="https://1.risaton.net/image.jpg"
             )
         )
-        # group_id = event.source.group_id
-        # user_id = event.source.user_id
-        # line_bot_api.push_message(
-        #     user_id,
-        #     ImageSendMessage(
-        #         original_content_url="https://1.risaton.net/image.jpg"
-        #     )
-        # )
     '''
     elif message_text.startswith("!g"):
         members = line_bot_api.get_group_member_ids(event.source.group_id)
@@ -116,11 +109,7 @@ def handle_message(event: MessageEvent):
         #     TextSendMessage(text=line_bot_api.getgroup)
         # )
     '''
-    # if event.type == "kick":
-    #     line_bot_api.push_message(
-    #         event.source.group_id,
-    #         TextSendMessage(text=f"{event.source.user_id} has been kicked")
-    #     )
+
 
 
 
